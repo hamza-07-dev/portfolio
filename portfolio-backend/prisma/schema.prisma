@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String   @default("Hamza")
+  createdAt    DateTime @default(now())
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  category    String // e.g. "SaaS", "Gaming", "Automation"
+  description String
+  stack       String[] // e.g. ["React 18", "Laravel 11", "MySQL"]
+  highlights  String[] // e.g. ["6 user roles", "Payment integration"]
+  imageUrl    String?
+  liveUrl     String?
+  repoUrl     String?
+  featured    Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Skill {
+  id       String @id @default(cuid())
+  name     String
+  category String // "Frontend", "Backend", "Data", "Tools"
+  level    Int // 0-100, shown as a progress bar
+  order    Int    @default(0)
+}
+
+model ContactMessage {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  projectType String? // "SaaS Web App", "AI & Automation", "MVP", "Consultation"
+  message     String
+  status      String   @default("new") // new | read | replied
+  createdAt   DateTime @default(now())
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  type      String // "page_view" | "project_view" | "cta_click"
+  path      String? // e.g. "/", "/projects/coprogest"
+  meta      String? // free-form JSON string for extra context
+  createdAt DateTime @default(now())
+
+  @@index([type, createdAt])
+}
